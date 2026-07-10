@@ -100,14 +100,55 @@ kb-manager/
 
 ## 安装
 
-**Claude Code（个人技能）**：把整个 `kb-manager/` 文件夹复制到 `~/.claude/skills/` 下即可。
+**Claude Code（个人技能，推荐）**：克隆到个人技能目录即可，之后 `git pull` 就能更新：
 
 ```bash
 git clone https://github.com/cuiyucheng0104-afk/kb-manager-skill.git ~/.claude/skills/kb-manager
 ```
 
-**项目级共享**：复制到项目的 `.claude/skills/` 下，随仓库提交，团队所有人可用。
+**项目级共享**：复制到项目的 `.claude/skills/kb-manager/` 下，随仓库提交，团队所有人可用。
 
 **一键安装包**：仓库 `dist/kb-manager.skill` 是打包好的技能文件，在支持的客户端中打开即可点击 Save skill 安装。
+
+> ⚠️ 安装后需要**新开一个会话**才生效——技能列表在会话启动时加载，已开着的会话看不到新装的技能。
+
+## 快速上手
+
+安装后新开会话，两种触发方式：
+
+**方式一：斜杠命令**——输入 `/kb-manager` 直接调用。
+
+**方式二：自然语言**（推荐，无需记命令）：
+
+```text
+你：帮我给这个项目初始化一个知识库
+Claude：（运行脚手架 → 扫描 package.json / schema / CI 配置 → 预填 10 份文档）
+        已创建 .kb/，其中 tech-stack、api、database 等 5 份已按代码实际情况填写，
+        技术选型理由、生产环境信息等 4 处标注了 ⏳ 待补充，需要你提供……
+```
+
+```text
+你：我刚加了一个 /orders 接口，帮我同步一下知识库
+Claude：（读接口代码 → 更新 api.md → changelog.md 追加记录 → 刷新 README 状态）
+```
+
+```text
+你：这个项目怎么部署？
+Claude：（先查 .kb/deployment.md，按文档回答；若发现文档与代码不一致会主动提出修正）
+```
+
+## 常见问题
+
+**Q：斜杠菜单里找不到 `/kb-manager`？**
+A：两个可能：① 技能没有装进 `~/.claude/skills/` 或项目 `.claude/skills/`（在别的目录不会被扫描）；② 装好后还在用旧会话——新开一个会话即可。
+
+**Q：怎么更新到最新版？**
+A：如果是 `git clone` 安装的，进 `~/.claude/skills/kb-manager` 执行 `git pull`；如果是手动复制的，重新复制一遍覆盖即可。
+
+**Q：`.kb/` 要不要提交进 git？**
+A：建议提交——知识库的价值在于团队共享和随代码演进。如果含敏感信息，按模板约定密钥只写"去哪里申请"，不写真实值，即可安全提交。
+
+**Q：已有项目文档（docs/ 等）怎么办？**
+A：初始化时告诉 Claude"参考现有 docs/ 目录"，它会把已有内容作为扫描素材填入对应模板；`.kb/` 与原有文档不冲突。
 
 安装后无需任何配置——Claude 会根据对话内容自动判断何时启用本技能。
