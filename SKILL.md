@@ -8,7 +8,9 @@ description: >
   当用户提到"知识库"、"项目文档"、"初始化文档"、"文档模板"、"整理文档"、
   "knowledge base"、"kb"、"project docs"，或希望为某个代码项目建立、补全、
   更新成套文档时，务必使用本技能——即使用户只是说"帮我把这个项目的文档搞一下"
-  或"新同事看不懂项目，写点文档"也应触发。
+  或"新同事看不懂项目，写点文档"也应触发。当用户想把项目知识库/项目文档同步、
+  导入、发布到 Obsidian（"同步到 Obsidian"、"放进 Obsidian 仓库"、
+  "sync kb to Obsidian"）时也应使用本技能。
 ---
 
 # KB Manager — 本地项目知识库管理
@@ -97,6 +99,35 @@ python3 <本技能目录>/scripts/init_kb.py <项目根目录>
 用户询问项目相关问题（"这个项目怎么部署？"、"数据库有哪些表？"）且项目存在 `.kb/` 时：
 先读 `.kb/README.md` 找到对应文档，基于文档回答；发现文档与代码不一致时，
 以代码为准回答，并主动提出更新文档。
+
+## 工作流四：同步到 Obsidian
+
+用户说"同步到 Obsidian"、"把知识库放进 Obsidian"时执行。
+
+**第 1 步 — 确定仓库路径。** 依次尝试：
+1. 项目 `.kb/.obsidian-sync.json` 存在（此前同步过）→ 直接复用其中记录的仓库路径；
+2. 读 Obsidian 的仓库清单自动发现：macOS 在 `~/Library/Application Support/obsidian/obsidian.json`，
+   Windows 在 `%APPDATA%\obsidian\obsidian.json`，Linux 在 `~/.config/obsidian/obsidian.json`
+   （Flatpak/Snap 安装路径可能不同）。只有一个仓库就直接用；有多个则列出让用户选；
+3. 文件不存在或解析失败 → 直接询问用户仓库路径（脚本会校验 `.obsidian` 目录，传错会明确报错）。
+
+**第 2 步 — 运行同步脚本：**
+
+```bash
+python3 <本技能目录>/scripts/sync_obsidian.py <项目根目录> <仓库路径>
+```
+
+脚本会在仓库的 `项目知识库/<项目名>/` 下生成：以项目名命名的索引笔记（含 frontmatter、
+tags 和 wikilink 导航，由 README 转换而来）+ README 之外的全部知识库文档（标准情况下为
+10 份主题文档；已自带 frontmatter 的文档保持原样）+ assets 资源。内部链接自动转为全路径
+wikilink 以避免多项目同名文档歧义，表格内的 wikilink 会转义 `\|`，代码块内的示例链接不转换，
+`> ⏳ 待补充：` 会升级为 `[!todo]` callout。同步覆盖自己的产物、不删除用户额外创建的笔记，
+可重复运行；成功后在 `.kb/.obsidian-sync.json` 记录目标位置。项目名、目标文件夹可用
+`--name`、`--dest` 覆盖。
+
+**第 3 步 — 汇报。** 告诉用户同步到了哪个路径、在 Obsidian 里打开哪个笔记开始浏览。
+之后执行工作流二时，若发现 `.kb/.obsidian-sync.json` 存在，更新完文档主动提醒用户
+可以再次同步（复用记录的仓库路径，无需重新询问）。
 
 ## 写作原则
 
