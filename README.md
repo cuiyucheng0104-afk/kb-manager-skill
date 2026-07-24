@@ -1,5 +1,7 @@
 # kb-manager — 本地开发项目知识库管理 Skill
 
+> 📦 本仓库现含 **两个 skill**:`kb-manager`(根目录,即本文)与 [`delivery-readiness-audit/`](delivery-readiness-audit/)(**交付就绪审计** —— 在下"可交付 / 完成"结论前,按维度实测判 ready / needs-config / blocked,避免"CI 绿就以为能交付")。
+
 一个专门针对本地开发项目设计的知识库管理技能。一句话让 Claude 为任意代码项目建立一套
 **标准化、基于事实、可持续维护**的知识库，存放在项目根目录的 `.kb/` 隐藏文件夹中。
 
